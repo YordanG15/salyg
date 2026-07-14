@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symmetry Club - Portal de Salud</title>
+    <title>Symmetry Club - Mi Portal de Salud & IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Cargamos la librería oficial de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -17,19 +16,16 @@
 </head>
 <body class="text-white selection:bg-white selection:text-black min-h-screen flex flex-col justify-between">
 
-    <!-- 1. PANTALLA DE ACCESO (LOGIN / REGISTRO) -->
+    <!-- 1. PANTALLA DE ACCESO -->
     <div id="auth-container" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a0a] px-4">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.02)_0%,transparent_70%)]"></div>
         <div class="w-full max-w-md bg-neutral-950 border border-white/10 rounded-lg p-8 space-y-6 relative z-10">
             <div class="text-center">
                 <span class="text-xs text-neutral-500 font-mono tracking-[0.2em] uppercase">Symmetry Health</span>
                 <h2 id="auth-title" class="text-3xl font-light tracking-tight mt-2 text-white">Iniciar Sesión</h2>
-                <p id="auth-subtitle" class="text-xs text-neutral-400 font-light mt-2">Ingresa tus credenciales para acceder al panel médico.</p>
+                <p id="auth-subtitle" class="text-xs text-neutral-400 font-light mt-2">Ingresa tus credenciales para acceder a tu ficha personal e IA.</p>
             </div>
-
-            <!-- Alertas de Error/Éxito -->
             <div id="auth-alert" class="hidden text-xs p-3 rounded border text-center"></div>
-
             <form id="auth-form" class="space-y-4">
                 <div>
                     <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Correo Electrónico</label>
@@ -39,12 +35,10 @@
                     <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Contraseña</label>
                     <input type="password" id="auth-password" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-3 text-sm text-white focus:outline-none focus:border-white/30 transition">
                 </div>
-
                 <button type="submit" id="btn-auth-primary" class="w-full bg-white text-black py-3 text-xs uppercase tracking-widest font-semibold hover:bg-neutral-200 transition duration-300">
                     Ingresar
                 </button>
             </form>
-
             <div class="text-center pt-2 border-t border-white/5 text-xs text-neutral-500">
                 <span id="auth-switch-text">¿No tienes cuenta?</span>
                 <button onclick="toggleAuthMode()" id="btn-auth-switch" class="text-white ml-1 hover:underline focus:outline-none">Regístrate</button>
@@ -52,102 +46,216 @@
         </div>
     </div>
 
-    <!-- 2. CONTENIDO PRINCIPAL (Symmetry Club) - Oculto por defecto hasta loguearse -->
+    <!-- 2. CONTENIDO PRINCIPAL -->
     <div id="app-content" class="hidden flex-col min-h-screen">
-        <!-- Encabezado / Barra de Navegación -->
-        <header class="fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10">
+        <header class="fixed top-0 left-0 w-full z-40 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10">
             <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 <a href="#" class="text-xl font-bold tracking-widest uppercase hover:opacity-80 transition">
-                    SYMMETRY <span class="font-light text-neutral-400">CLUB</span>
+                    SYMMETRY <span class="font-light text-neutral-400">HEALTH</span>
                 </a>
-                
                 <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
-                    <a href="#" class="text-white hover:text-neutral-400 transition">Home</a>
+                    <button onclick="navegarA('seccion-perfil')" class="text-white hover:text-neutral-400 transition">Mi Ficha</button>
+                    <button onclick="navegarA('seccion-ia')" class="text-neutral-400 hover:text-white transition">Asistente IA Premium</button>
                     <span id="user-email-display" class="text-neutral-500 font-mono text-xs">usuario@correo.com</span>
                 </nav>
-                
                 <div class="flex items-center space-x-4">
                     <button onclick="cerrarSesion()" class="border border-white/20 px-5 py-2 text-xs uppercase tracking-widest font-semibold hover:bg-white hover:text-black hover:border-white transition duration-300">
-                        Cerrar Sesión
+                        Salir
                     </button>
                 </div>
             </div>
         </header>
 
-        <main class="pt-20 flex-grow">
-            <!-- Sección Principal (Hero) -->
-            <section class="min-h-[60vh] flex flex-col justify-center items-center text-center px-6 relative overflow-hidden">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_60%)]"></div>
-                <div class="max-w-4xl mx-auto z-10 space-y-6">
-                    <p class="text-xs uppercase tracking-[0.3em] text-neutral-400 font-medium">The Art of Balance & Design</p>
-                    <h1 class="text-5xl md:text-7xl font-light tracking-tight leading-none">
-                        Elegance is <br>
-                        <span class="font-semibold italic text-white">Symmetry</span>
-                    </h1>
+        <main class="pt-24 flex-grow px-6 max-w-7xl mx-auto w-full">
+            
+            <!-- SECCIÓN A: FICHA DE SALUD PERSONAL (GRATUITO) -->
+            <section id="seccion-perfil" class="py-8">
+                <div class="mb-8">
+                    <span class="text-xs text-neutral-500 font-mono">PANEL DE CONTROL</span>
+                    <h2 class="text-3xl font-semibold tracking-tight text-white mt-2">Mi Ficha de Salud</h2>
+                </div>
+
+                <!-- Formulario de creación inicial -->
+                <div id="registro-perfil-container" class="hidden bg-neutral-950 border border-white/10 rounded-lg p-8 max-w-3xl mx-auto space-y-6">
+                    <div class="border-b border-white/5 pb-4">
+                        <h3 class="text-xl font-light text-white">Activa tu Ficha de Salud Personal</h3>
+                        <p class="text-xs text-neutral-400 mt-1">Completa tu información para configurar tu espacio médico privado.</p>
+                    </div>
+                    <div id="form-perfil-alert" class="hidden text-xs p-3 rounded border text-center"></div>
+                    <form id="perfil-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Nombre Completo</label>
+                                <input type="text" id="p-nombre" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">RUT</label>
+                                <input type="text" id="p-rut" placeholder="21.367.587-7" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Fecha de Nacimiento</label>
+                                <input type="date" id="p-nacimiento" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-xs text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Sexo</label>
+                                <select id="p-sexo" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-xs text-white focus:outline-none">
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Enfermedades Crónicas (Separadas por comas)</label>
+                            <textarea id="p-cronicas" placeholder="Ej: Hipertensión arterial, Asma bronquial" class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none h-20"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Estatura Inicial (cm)</label>
+                                <input type="number" id="p-estatura" step="0.1" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-mono text-neutral-400 tracking-wider uppercase mb-1">Peso Inicial (kg)</label>
+                                <input type="number" id="p-peso" step="0.1" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="pt-4">
+                            <button type="submit" class="w-full bg-white text-black py-3 text-xs uppercase tracking-widest font-semibold hover:bg-neutral-200 transition">
+                                Activar mi Portal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Ficha en pantalla ya creada -->
+                <div id="ficha-perfil-container" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
+                        <div>
+                            <span id="f-sexo" class="text-xs text-neutral-500 font-mono tracking-widest uppercase">MASCULINO</span>
+                            <h3 id="f-nombre" class="text-2xl font-light text-white mt-1">Nombre</h3>
+                            <p id="f-rut" class="text-sm text-neutral-400 font-light mt-1">RUT: 21.367.587-7</p>
+                            <p id="f-edad" class="text-xs text-neutral-500 mt-2">Nacimiento: -</p>
+                        </div>
+                    </div>
+
+                    <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
+                        <div>
+                            <span class="text-xs text-neutral-500 font-mono">BIOMETRÍA E HISTORIAL</span>
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                <div>
+                                    <span class="text-[10px] text-neutral-500 font-mono">ESTATURA</span>
+                                    <p id="f-estatura" class="text-xl font-medium text-white mt-1">- cm</p>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] text-neutral-500 font-mono">PESO</span>
+                                    <p id="f-peso" class="text-xl font-medium text-white mt-1">- kg</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="abrirModalActualizarFisico()" class="w-full border border-white/10 hover:border-white/20 text-xs py-2 text-neutral-300 hover:text-white transition rounded">
+                            Actualizar Registro Físico
+                        </button>
+                    </div>
+
+                    <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
+                        <div>
+                            <span class="text-xs text-neutral-500 font-mono">ENFERMEDADES CRÓNICAS</span>
+                            <p id="f-cronicas" class="text-sm text-neutral-400 font-light mt-4 leading-relaxed">Ninguna registrada.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <!-- Sección de Registros de la Base de Datos (Supabase) -->
-            <section id="explore" class="max-w-7xl mx-auto px-6 py-24 border-t border-white/10">
-                <div class="mb-12">
-                    <span class="text-xs text-neutral-500 font-mono">01 // PANEL DE SALUD</span>
-                    <h2 class="text-3xl font-semibold tracking-tight text-white mt-2">Mis Pacientes</h2>
-                    <p class="text-neutral-400 font-light mt-2">Visualización en tiempo real de registros médicos de la base de datos.</p>
+            <!-- SECCIÓN B: ASISTENTE IA (SCRIPTOR DE SUSCRIPCIÓN) -->
+            <section id="seccion-ia" class="hidden py-8">
+                <div class="mb-8">
+                    <span class="text-xs text-neutral-500 font-mono">INTELLIGENCE HEALTH SUITE</span>
+                    <h2 class="text-3xl font-semibold tracking-tight text-white mt-2">Asistente de Optimización IA</h2>
                 </div>
 
-                <!-- Contenedor dinámico donde aparecerán las tarjetas de los pacientes -->
-                <div id="grid-pacientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="col-span-full border border-white/10 bg-neutral-900/50 rounded-lg p-12 flex items-center justify-center min-h-[200px]">
-                        <p class="text-neutral-400 text-sm font-light animate-pulse">Conectando con Supabase...</p>
+                <!-- Caso B1: Usuario NO Suscrito -->
+                <div id="ia-bloqueada-container" class="bg-neutral-950 border border-white/10 rounded-lg p-12 text-center max-w-2xl mx-auto space-y-6">
+                    <div class="inline-block bg-white/5 border border-white/10 rounded-full p-4">
+                        <span class="text-2xl">🔒</span>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-light text-white">Función de Inteligencia Artificial Premium</h3>
+                        <p class="text-sm text-neutral-400 max-w-md mx-auto">Compara precios de consultas, cotiza medicamentos en farmacias cercanas y localiza centros médicos de forma inteligente.</p>
+                    </div>
+                    <div class="bg-neutral-900/50 p-6 rounded border border-white/5 max-w-sm mx-auto">
+                        <span class="text-xs font-mono text-neutral-500 block">MEMBRESÍA ACTIVA</span>
+                        <span class="text-2xl font-semibold text-white mt-1 block">$4.990 <span class="text-xs font-normal text-neutral-400">/ mes</span></span>
+                        <p class="text-[10px] text-neutral-500 mt-2">Cancela en cualquier momento de manera digital.</p>
+                    </div>
+                    <button onclick="simularSuscripcion()" class="bg-white text-black px-8 py-3.5 text-xs font-semibold uppercase tracking-widest hover:bg-neutral-200 transition duration-300">
+                        Suscribirse e Iniciar IA
+                    </button>
+                </div>
+
+                <!-- Caso B2: Usuario SÍ Suscrito -->
+                <div id="ia-activa-container" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Caja 1: Localizador -->
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
+                        <span class="text-xs text-neutral-500 font-mono">📍 LOCALIZADOR DE CENTROS</span>
+                        <h4 class="text-xl font-light">¿Dónde atenderse hoy?</h4>
+                        <p class="text-xs text-neutral-400">La IA analiza centros de atención pública, SAPU o clínicas privadas más cercanas a ti en Concepción o Los Ángeles.</p>
+                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Consultar Ubicaciones</button>
+                    </div>
+
+                    <!-- Caja 2: Comparador -->
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
+                        <span class="text-xs text-neutral-500 font-mono">💸 COMPARADOR DE CONSULTAS</span>
+                        <h4 class="text-xl font-light">Compara Aranceles</h4>
+                        <p class="text-xs text-neutral-400">Introduce la especialidad médica que necesitas y evalúa qué clínicas o médicos independientes te convienen más.</p>
+                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Evaluar Precios</button>
+                    </div>
+
+                    <!-- Caja 3: Cotizador Fármacos -->
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
+                        <span class="text-xs text-neutral-500 font-mono">💊 COTIZADOR DE FÁRMACOS & CUPONES</span>
+                        <h4 class="text-xl font-light">Cotiza tus Recetas</h4>
+                        <p class="text-xs text-neutral-400">Sube el nombre de tu medicamento crónico. La IA cotizará en Cruz Verde, Salcobrand y Ahumada, aplicando descuentos Fonasa, Isapre o convenios de tu comuna.</p>
+                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Cotizar Medicamento</button>
                     </div>
                 </div>
             </section>
         </main>
 
-        <!-- Pie de página (Footer) -->
-        <footer class="border-t border-white/10 bg-[#070707]">
-            <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 text-sm text-neutral-500">
-                <p>&copy; 2026 SYMMETRY CLUB. Open Source Canvas.</p>
+        <footer class="border-t border-white/10 bg-[#070707] mt-12">
+            <div class="max-w-7xl mx-auto px-6 py-10 text-center text-xs text-neutral-500">
+                <p>&copy; 2026 SYMMETRY HEALTH. Open Source Canvas.</p>
             </div>
         </footer>
     </div>
 
-    <!-- Ventana Emergente (Modal) para Ficha Médica -->
-    <div id="modal-ficha" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md items-center justify-center p-4">
-        <div class="bg-neutral-950 border border-white/15 w-full max-w-lg rounded-lg p-8 relative flex flex-col space-y-6">
-            <button onclick="cerrarFicha()" class="absolute top-4 right-4 text-neutral-400 hover:text-white font-mono text-lg">×</button>
-            
+    <!-- MODAL ACTUALIZAR DATOS FÍSICOS -->
+    <div id="modal-update-fisico" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-neutral-950 border border-white/15 w-full max-w-sm rounded-lg p-8 relative flex flex-col space-y-6">
+            <button onclick="cerrarModalActualizarFisico()" class="absolute top-4 right-4 text-neutral-400 hover:text-white font-mono text-lg">×</button>
             <div>
-                <span id="modal-sexo" class="text-xs text-neutral-500 font-mono tracking-widest uppercase">MASCULINO</span>
-                <h2 id="modal-nombre" class="text-2xl font-semibold tracking-tight text-white mt-1">Nombre Completo</h2>
-                <p id="modal-rut" class="text-sm text-neutral-400 font-light">RUT: 00.000.000-0</p>
+                <span class="text-xs text-neutral-500 font-mono uppercase">BIOMETRÍA</span>
+                <h3 class="text-xl font-light text-white mt-1">Registrar Control</h3>
             </div>
-
-            <div class="border-t border-b border-white/10 py-4 grid grid-cols-2 gap-4">
-                <div>
-                    <span class="text-xs text-neutral-500 font-mono">ESTATURA</span>
-                    <p id="modal-estatura" class="text-lg font-medium text-white mt-1">Cargando...</p>
+            <form id="form-update-fisico" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-mono text-neutral-400 uppercase mb-1">Estatura (cm)</label>
+                        <input type="number" id="up-estatura" step="0.1" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-neutral-400 uppercase mb-1">Peso (kg)</label>
+                        <input type="number" id="up-peso" step="0.1" required class="w-full bg-neutral-900 border border-white/10 rounded px-4 py-2.5 text-sm text-white focus:outline-none">
+                    </div>
                 </div>
-                <div>
-                    <span class="text-xs text-neutral-500 font-mono">PESO</span>
-                    <p id="modal-peso" class="text-lg font-medium text-white mt-1">Cargando...</p>
-                </div>
-            </div>
-
-            <div>
-                <span class="text-xs text-neutral-500 font-mono block mb-2">RECETAS ADJUNTAS</span>
-                <div id="modal-recetas-container" class="space-y-4">
-                    <p class="text-neutral-400 text-sm font-light italic">Cargando receta...</p>
-                </div>
-            </div>
-
-            <button onclick="cerrarFicha()" class="border border-white/20 text-white py-2 text-xs uppercase tracking-widest font-semibold hover:bg-white hover:text-black hover:border-white transition duration-300">
-                Cerrar Panel
-            </button>
+                <button type="submit" class="w-full bg-white text-black py-2.5 text-xs uppercase tracking-widest font-semibold hover:bg-neutral-200 transition">
+                    Guardar Cambios
+                </button>
+            </form>
         </div>
     </div>
 
-    <!-- Lógica de Conexión a Supabase -->
     <script>
         const SUPABASE_URL = "https://gknzhlntsvsbrzlfujxi.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_T6-zu4St4MgdJ1OWdELMNQ_1SgdRnQv";
@@ -155,23 +263,22 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let esModoRegistro = false;
+        let usuarioSesion = null;
 
-        // 1. CONTROL DE ESTADO DE AUTENTICACIÓN
         document.addEventListener('DOMContentLoaded', () => {
-            // Escuchar cambios en la sesión (Login / Logout)
             supabaseClient.auth.onAuthStateChange((event, session) => {
                 const authContainer = document.getElementById('auth-container');
                 const appContent = document.getElementById('app-content');
 
                 if (session) {
-                    // Hay un usuario logueado
+                    usuarioSesion = session.user;
                     authContainer.classList.add('hidden');
                     appContent.classList.remove('hidden');
                     appContent.classList.add('flex');
                     document.getElementById('user-email-display').innerText = session.user.email;
-                    cargarPacientes();
+                    comprobarYFicha();
                 } else {
-                    // No hay usuario
+                    usuarioSesion = null;
                     authContainer.classList.remove('hidden');
                     appContent.classList.add('hidden');
                     appContent.classList.remove('flex');
@@ -179,7 +286,6 @@
             });
         });
 
-        // Alternar el formulario entre Login y Registro
         function toggleAuthMode() {
             esModoRegistro = !esModoRegistro;
             const title = document.getElementById('auth-title');
@@ -193,20 +299,19 @@
 
             if (esModoRegistro) {
                 title.innerText = "Crear Cuenta";
-                subtitle.innerText = "Regístrate para comenzar a administrar pacientes de manera privada.";
+                subtitle.innerText = "Regístrate para comenzar a administrar tu salud de manera privada.";
                 btnPrimary.innerText = "Registrarse";
                 switchText.innerText = "¿Ya tienes una cuenta?";
                 btnSwitch.innerText = "Inicia Sesión";
             } else {
                 title.innerText = "Iniciar Sesión";
-                subtitle.innerText = "Ingresa tus credenciales para acceder al panel médico.";
+                subtitle.innerText = "Ingresa tus credenciales para acceder a tu ficha personal.";
                 btnPrimary.innerText = "Ingresar";
                 switchText.innerText = "¿No tienes cuenta?";
                 btnSwitch.innerText = "Regístrate";
             }
         }
 
-        // Manejar el envío del formulario de autenticación
         document.getElementById('auth-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('auth-email').value;
@@ -217,19 +322,13 @@
             alert.className = "text-xs p-3 rounded border text-center";
 
             if (esModoRegistro) {
-                // Registrar nuevo usuario en Supabase Auth
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
                 if (error) {
                     alert.innerText = error.message;
                     alert.classList.add('bg-red-500/10', 'border-red-500/20', 'text-red-400');
                     alert.classList.remove('hidden');
-                } else {
-                    alert.innerText = "¡Registro exitoso! Iniciando sesión...";
-                    alert.classList.add('bg-green-500/10', 'border-green-500/20', 'text-green-400');
-                    alert.classList.remove('hidden');
                 }
             } else {
-                // Iniciar sesión
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) {
                     alert.innerText = error.message;
@@ -239,118 +338,154 @@
             }
         });
 
-        // Cerrar sesión
         async function cerrarSesion() {
             await supabaseClient.auth.signOut();
         }
 
-        // 2. LOGICA DE PACIENTES Y BASE DE DATOS
-        async function cargarPacientes() {
-            const grid = document.getElementById('grid-pacientes');
-
-            // Consultamos únicamente los pacientes registrados en la tabla
-            const { data: pacientes, error } = await supabaseClient
-                .from('pacientes')
-                .select('id, nombre_completo, rut, sexo');
-
-            if (error) {
-                console.error("Error al obtener pacientes:", error);
-                grid.innerHTML = `
-                    <div class="col-span-full border border-red-500/20 bg-red-500/5 rounded-lg p-12 text-center">
-                        <p class="text-red-400 text-sm">Error de conexión con la base de datos.</p>
-                    </div>`;
-                return;
-            }
-
-            if (!pacientes || pacientes.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full border border-white/10 bg-neutral-900/50 rounded-lg p-12 text-center">
-                        <p class="text-neutral-400 text-sm font-light">No tienes pacientes registrados en tu sistema.</p>
-                    </div>`;
-                return;
-            }
-
-            grid.innerHTML = "";
-
-            pacientes.forEach(paciente => {
-                const card = document.createElement('div');
-                card.className = "border border-white/10 bg-neutral-900/30 hover:border-white/20 transition duration-300 rounded-lg p-6 flex flex-col justify-between min-h-[180px] cursor-pointer";
-                card.onclick = () => abrirFicha(paciente);
-                
-                card.innerHTML = `
-                    <div>
-                        <span class="text-xs text-neutral-500 font-mono tracking-widest uppercase">${paciente.sexo || 'No especificado'}</span>
-                        <h3 class="text-xl font-medium text-white mt-1">${paciente.nombre_completo}</h3>
-                        <p class="text-sm text-neutral-400 mt-2 font-light">RUT: ${paciente.rut}</p>
-                    </div>
-                    <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-neutral-500 font-mono">
-                        <span>ID: ${paciente.id.substring(0, 8)}...</span>
-                        <span class="text-white hover:underline">Ver Ficha →</span>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+        function navegarA(idSeccion) {
+            document.getElementById('seccion-perfil').classList.add('hidden');
+            document.getElementById('seccion-ia').classList.add('hidden');
+            document.getElementById(idSeccion).classList.remove('hidden');
         }
 
-        async function abrirFicha(paciente) {
-            const modal = document.getElementById('modal-ficha');
-            
-            document.getElementById('modal-sexo').innerText = paciente.sexo || 'No especificado';
-            document.getElementById('modal-nombre').innerText = paciente.nombre_completo;
-            document.getElementById('modal-rut').innerText = `RUT: ${paciente.rut}`;
-            
-            document.getElementById('modal-estatura').innerText = "Cargando...";
-            document.getElementById('modal-peso').innerText = "Cargando...";
-            document.getElementById('modal-recetas-container').innerHTML = `<p class="text-neutral-400 text-sm font-light italic">Buscando recetas...</p>`;
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+        async function comprobarYFicha() {
+            const containerReg = document.getElementById('registro-perfil-container');
+            const containerFicha = document.getElementById('ficha-perfil-container');
 
-            const { data: historial, error: errHist } = await supabaseClient
+            const { data: perfil, error } = await supabaseClient
+                .from('perfiles_salud')
+                .select('*')
+                .eq('id', usuarioSesion.id)
+                .maybeSingle();
+
+            if (!perfil) {
+                containerReg.classList.remove('hidden');
+                containerFicha.classList.add('hidden');
+            } else {
+                containerReg.classList.add('hidden');
+                containerFicha.classList.remove('hidden');
+                mostrarFichaDeUsuario(perfil);
+                evaluarSuscripcionIA();
+            }
+        }
+
+        document.getElementById('perfil-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alert = document.getElementById('form-perfil-alert');
+            alert.classList.add('hidden');
+
+            const nombre_completo = document.getElementById('p-nombre').value;
+            const rut = document.getElementById('p-rut').value;
+            const fecha_nacimiento = document.getElementById('p-nacimiento').value;
+            const sexo = document.getElementById('p-sexo').value;
+            const enfermedades_cronicas = document.getElementById('p-cronicas').value;
+            const estatura = parseFloat(document.getElementById('p-estatura').value);
+            const peso = parseFloat(document.getElementById('p-peso').value);
+
+            const { error: errPerfil } = await supabaseClient
+                .from('perfiles_salud')
+                .insert([{
+                    id: usuarioSesion.id,
+                    nombre_completo,
+                    rut,
+                    fecha_nacimiento,
+                    sexo,
+                    enfermedades_cronicas
+                }]);
+
+            if (errPerfil) {
+                alert.innerText = "Error: " + errPerfil.message;
+                alert.classList.remove('hidden');
+                return;
+            }
+
+            await supabaseClient.from('historial_salud').insert([{
+                usuario_id: usuarioSesion.id,
+                estatura_cm: estatura,
+                peso_kg: peso
+            }]);
+
+            comprobarYFicha();
+        });
+
+        async function mostrarFichaDeUsuario(perfil) {
+            document.getElementById('f-sexo').innerText = perfil.sexo || 'No especificado';
+            document.getElementById('f-nombre').innerText = perfil.nombre_completo;
+            document.getElementById('f-rut').innerText = `RUT: ${perfil.rut}`;
+            document.getElementById('f-edad').innerText = `Nacimiento: ${perfil.fecha_nacimiento}`;
+            document.getElementById('f-cronicas').innerText = perfil.enfermedades_cronicas || "Ninguna enfermedad crónica registrada.";
+
+            const { data: historial } = await supabaseClient
                 .from('historial_salud')
                 .select('estatura_cm, peso_kg')
-                .eq('paciente_id', paciente.id)
+                .eq('usuario_id', usuarioSesion.id)
                 .order('registrado_el', { ascending: false })
                 .limit(1);
 
-            if (!errHist && historial && historial.length > 0) {
-                document.getElementById('modal-estatura').innerText = `${historial[0].estatura_cm} cm`;
-                document.getElementById('modal-peso').innerText = `${historial[0].peso_kg} kg`;
-            } else {
-                document.getElementById('modal-estatura').innerText = "Sin registro";
-                document.getElementById('modal-peso').innerText = "Sin registro";
-            }
-
-            const { data: recetas, error: errRec } = await supabaseClient
-                .from('recetas_medicas')
-                .select('url_imagen, descripcion')
-                .eq('paciente_id', paciente.id);
-
-            const recetasCont = document.getElementById('modal-recetas-container');
-            recetasCont.innerHTML = "";
-
-            if (!errRec && recetas && recetas.length > 0) {
-                recetas.forEach(receta => {
-                    const recDiv = document.createElement('div');
-                    recDiv.className = "border border-white/5 bg-neutral-900/40 rounded p-4 space-y-3";
-                    recDiv.innerHTML = `
-                        <p class="text-xs text-neutral-400 font-light">${receta.descripcion || 'Sin descripción'}</p>
-                        <a href="${receta.url_imagen}" target="_blank" class="block overflow-hidden rounded border border-white/10 hover:border-white/30 transition duration-300">
-                            <img src="${receta.url_imagen}" alt="Receta" class="w-full h-auto object-cover max-h-[120px] opacity-80 hover:opacity-100 transition">
-                        </a>
-                    `;
-                    recetasCont.appendChild(recDiv);
-                });
-            } else {
-                recetasCont.innerHTML = `<p class="text-neutral-500 text-sm font-light italic">No hay recetas digitalizadas para este paciente.</p>`;
+            if (historial && historial.length > 0) {
+                document.getElementById('f-estatura').innerText = `${historial[0].estatura_cm} cm`;
+                document.getElementById('f-peso').innerText = `${historial[0].peso_kg} kg`;
             }
         }
 
-        function cerrarFicha() {
-            const modal = document.getElementById('modal-ficha');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+        async function evaluarSuscripcionIA() {
+            const { data: suscripcion } = await supabaseClient
+                .from('suscripciones')
+                .select('estado')
+                .eq('usuario_id', usuarioSesion.id)
+                .maybeSingle();
+
+            if (suscripcion && (suscripcion.estado === 'active' || suscripcion.estado === 'trialing')) {
+                document.getElementById('ia-bloqueada-container').classList.add('hidden');
+                document.getElementById('ia-activa-container').classList.remove('hidden');
+            } else {
+                document.getElementById('ia-bloqueada-container').classList.remove('hidden');
+                document.getElementById('ia-activa-container').classList.add('hidden');
+            }
         }
+
+        async function simularSuscripcion() {
+            // Inserta una suscripción activa para el usuario de prueba
+            const { error } = await supabaseClient
+                .from('suscripciones')
+                .insert([{
+                    usuario_id: usuarioSesion.id,
+                    estado: 'active',
+                    fecha_vencimiento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 días más
+                }]);
+
+            if (error) {
+                alert("Error al procesar la suscripción de prueba.");
+                return;
+            }
+
+            evaluarSuscripcionIA();
+        }
+
+        function abrirModalActualizarFisico() {
+            document.getElementById('modal-update-fisico').classList.remove('hidden');
+            document.getElementById('modal-update-fisico').classList.add('flex');
+        }
+
+        function cerrarModalActualizarFisico() {
+            document.getElementById('modal-update-fisico').classList.add('hidden');
+            document.getElementById('modal-update-fisico').classList.remove('flex');
+        }
+
+        document.getElementById('form-update-fisico').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const estatura = parseFloat(document.getElementById('up-estatura').value);
+            const peso = parseFloat(document.getElementById('up-peso').value);
+
+            await supabaseClient.from('historial_salud').insert([{
+                usuario_id: usuarioSesion.id,
+                estatura_cm: estatura,
+                peso_kg: peso
+            }]);
+
+            cerrarModalActualizarFisico();
+            comprobarYFicha();
+        });
     </script>
 </body>
 </html>
