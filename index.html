@@ -81,6 +81,41 @@
         </section>
     </main>
 
+    <!-- Ventana Emergente (Modal) para Ficha Médica -->
+    <div id="modal-ficha" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-neutral-950 border border-white/15 w-full max-w-lg rounded-lg p-8 relative flex flex-col space-y-6">
+            <button onclick="cerrarFicha()" class="absolute top-4 right-4 text-neutral-400 hover:text-white font-mono text-lg">×</button>
+            
+            <div>
+                <span id="modal-sexo" class="text-xs text-neutral-500 font-mono tracking-widest uppercase">MASCULINO</span>
+                <h2 id="modal-nombre" class="text-2xl font-semibold tracking-tight text-white mt-1">Nombre Completo</h2>
+                <p id="modal-rut" class="text-sm text-neutral-400 font-light">RUT: 00.000.000-0</p>
+            </div>
+
+            <div class="border-t border-b border-white/10 py-4 grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-xs text-neutral-500 font-mono">ESTATURA</span>
+                    <p id="modal-estatura" class="text-lg font-medium text-white mt-1">Cargando...</p>
+                </div>
+                <div>
+                    <span class="text-xs text-neutral-500 font-mono">PESO</span>
+                    <p id="modal-peso" class="text-lg font-medium text-white mt-1">Cargando...</p>
+                </div>
+            </div>
+
+            <div>
+                <span class="text-xs text-neutral-500 font-mono block mb-2">RECETAS ADJUNTAS</span>
+                <div id="modal-recetas-container" class="space-y-4">
+                    <p class="text-neutral-400 text-sm font-light italic">Cargando receta...</p>
+                </div>
+            </div>
+
+            <button onclick="cerrarFicha()" class="border border-white/20 text-white py-2 text-xs uppercase tracking-widest font-semibold hover:bg-white hover:text-black hover:border-white transition duration-300">
+                Cerrar Panel
+            </button>
+        </div>
+    </div>
+
     <!-- Pie de página (Footer) -->
     <footer class="border-t border-white/10 bg-[#070707]">
         <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 text-sm text-neutral-500">
@@ -127,13 +162,13 @@
                 return;
             }
 
-            // Limpiamos el contenedor del mensaje de carga
             grid.innerHTML = "";
 
-            // Generamos las tarjetas adaptadas al diseño premium del sitio
             pacientes.forEach(paciente => {
                 const card = document.createElement('div');
-                card.className = "border border-white/10 bg-neutral-900/30 hover:border-white/20 transition duration-300 rounded-lg p-6 flex flex-col justify-between min-h-[180px]";
+                card.className = "border border-white/10 bg-neutral-900/30 hover:border-white/20 transition duration-300 rounded-lg p-6 flex flex-col justify-between min-h-[180px] cursor-pointer";
+                // Añadimos evento de clic a toda la tarjeta para abrir la ficha
+                card.onclick = () => abrirFicha(paciente);
                 
                 card.innerHTML = `
                     <div>
@@ -143,14 +178,80 @@
                     </div>
                     <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-neutral-500 font-mono">
                         <span>ID: ${paciente.id.substring(0, 8)}...</span>
-                        <span class="text-white hover:underline cursor-pointer">Ver Ficha →</span>
+                        <span class="text-white hover:underline">Ver Ficha →</span>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        // Ejecutar la carga de datos inmediatamente al abrir la web
+        async function abrirFicha(paciente) {
+            const modal = document.getElementById('modal-ficha');
+            
+            // Colocar datos básicos inmediatos
+            document.getElementById('modal-sexo').innerText = paciente.sexo || 'No especificado';
+            document.getElementById('modal-nombre').innerText = paciente.nombre_completo;
+            document.getElementById('modal-rut').innerText = `RUT: ${paciente.rut}`;
+            
+            // Resetear cargando
+            document.getElementById('modal-estatura').innerText = "Cargando...";
+            document.getElementById('modal-peso').innerText = "Cargando...";
+            document.getElementById('modal-recetas-container').innerHTML = `<p class="text-neutral-400 text-sm font-light italic">Buscando recetas...</p>`;
+            
+            // Mostrar modal visualmente
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            // 1. Consultar historial físico
+            const { data: historial, error: errHist } = await supabaseClient
+                .from('historial_salud')
+                .select('estatura_cm, peso_kg')
+                .eq('paciente_id', paciente.id)
+                .order('registrado_el', { ascending: false })
+                .limit(1);
+
+            if (!errHist && historial && historial.length > 0) {
+                document.getElementById('modal-estatura').innerText = `${historial[0].estatura_cm} cm`;
+                document.getElementById('modal-peso').innerText = `${historial[0].peso_kg} kg`;
+            } else {
+                document.getElementById('modal-estatura').innerText = "Sin registro";
+                document.getElementById('modal-peso').innerText = "Sin registro";
+            }
+
+            // 2. Consultar recetas médicas
+            const { data: recetas, error: errRec } = await supabaseClient
+                .from('recetas_medicas')
+                .select('url_imagen, descripcion')
+                .eq('paciente_id', paciente.id);
+
+            const recetasCont = document.getElementById('modal-recetas-container');
+            recetasCont.innerHTML = "";
+
+            if (!errRec && recetas && recetas.length > 0) {
+                recetas.forEach(receta => {
+                    const recDiv = document.createElement('div');
+                    recDiv.className = "border border-white/5 bg-neutral-900/40 rounded p-4 space-y-3";
+                    recDiv.innerHTML = `
+                        <p class="text-xs text-neutral-400 font-light">${receta.descripcion || 'Sin descripción'}</p>
+                        <a href="${receta.url_imagen}" target="_blank" class="block overflow-hidden rounded border border-white/10 hover:border-white/30 transition duration-300">
+                            <img src="${receta.url_imagen}" alt="Receta" class="w-full h-auto object-cover max-h-[120px] opacity-80 hover:opacity-100 transition">
+                        </a>
+                        <span class="text-[10px] text-neutral-500 font-mono block text-right">Haz clic en la imagen para abrir en grande</span>
+                    `;
+                    recetasCont.appendChild(recDiv);
+                });
+            } else {
+                recetasCont.innerHTML = `<p class="text-neutral-500 text-sm font-light italic">No hay recetas digitalizadas para este paciente.</p>`;
+            }
+        }
+
+        function cerrarFicha() {
+            const modal = document.getElementById('modal-ficha');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        // Ejecutar la carga al iniciar
         cargarPacientes();
     </script>
 </body>
