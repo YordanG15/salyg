@@ -1,22 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symmetry Club - Replica Editable</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Cargamos la librería oficial de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Tipografía y suavizado de transiciones para replicar el estilo Premium */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0b0b0b;
+            background-color: #0a0a0a;
         }
     </style>
 </head>
 <body class="text-white selection:bg-white selection:text-black">
 
-    <header class="fixed top-0 left-0 w-full z-50 bg-[#0b0b0b]/80 backdrop-blur-md border-b border-white/10">
+    <!-- Encabezado / Barra de Navegación -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10">
         <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="#" class="text-xl font-bold tracking-widest uppercase hover:opacity-80 transition">
                 SYMMETRY <span class="font-light text-neutral-400">CLUB</span>
@@ -24,11 +27,11 @@
             
             <nav class="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
                 <a href="#" class="text-white hover:text-neutral-400 transition">Home</a>
-                <a href="#" class="text-neutral-400 hover:text-white transition">Collective</a>
+                <a href="#" class="text-neutral-400 hover:text-white transition">Collection</a>
                 <a href="#" class="text-neutral-400 hover:text-white transition">Manifesto</a>
                 <a href="#" class="text-neutral-400 hover:text-white transition">Contact</a>
             </nav>
-
+            
             <div class="hidden md:flex items-center">
                 <a href="#" class="border border-white px-5 py-2 text-xs uppercase tracking-widest font-semibold hover:bg-white hover:text-black transition duration-300">
                     Enter Club
@@ -38,16 +41,17 @@
     </header>
 
     <main class="pt-20">
+        <!-- Sección Principal (Hero) con fondo radial -->
         <section class="min-h-[85vh] flex flex-col justify-center items-center text-center px-6 relative overflow-hidden">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.03)_0%,transparent_60%)]"></div>
-
+            
             <div class="max-w-4xl mx-auto z-10 space-y-6">
                 <p class="text-xs uppercase tracking-[0.3em] text-neutral-400 font-medium">
                     The Art of Balance & Design
                 </p>
                 <h1 class="text-5xl md:text-8xl font-light tracking-tight leading-none">
-                    Elegance in <br>
-                    <span class="font-semibold italic text-neutral-200">Symmetry</span>
+                    Elegance is <br>
+                    <span class="font-semibold italic text-white">Symmetry</span>
                 </h1>
                 <p class="text-neutral-400 text-lg md:text-xl font-light max-w-xl mx-auto leading-relaxed pt-4">
                     A digital space curated for minds that appreciate structure, harmony, and premium execution.
@@ -60,43 +64,24 @@
             </div>
         </section>
 
+        <!-- Sección de Registros de la Base de Datos (Supabase) -->
         <section id="explore" class="max-w-7xl mx-auto px-6 py-24 border-t border-white/10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-24">
-                <div class="space-y-4">
-                    <span class="text-xs text-neutral-500 font-mono">01 // VISION</span>
-                    <h2 class="text-3xl font-semibold tracking-tight">Structured Minimalism</h2>
-                    <p class="text-neutral-400 font-light leading-relaxed">
-                        Every element has a purpose. We strip away the noise to leave only what matters, creating an aesthetic that feels timeless yet strictly contemporary.
-                    </p>
-                </div>
-                <div class="aspect-video bg-neutral-900 border border-white/10 flex items-center justify-center p-8 group hover:border-white/30 transition">
-                    <div class="text-center space-y-2">
-                        <div class="w-12 h-[1px] bg-white mx-auto my-4 transition-transform group-hover:scale-x-150"></div>
-                        <p class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Symmetry Grid System</p>
-                    </div>
-                </div>
+            <div class="mb-12">
+                <span class="text-xs text-neutral-500 font-mono">01 // PANEL DE SALUD</span>
+                <h2 class="text-3xl font-semibold tracking-tight text-white mt-2">Pacientes Registrados</h2>
+                <p class="text-neutral-400 font-light mt-2">Visualización en tiempo real de registros médicos de la base de datos.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center md:flex-row-reverse">
-                <div class="aspect-video bg-neutral-900 border border-white/10 flex items-center justify-center p-8 order-last md:order-first group hover:border-white/30 transition">
-                    <div class="text-center space-y-2">
-                        <div class="w-8 h-8 border border-white/20 rounded-full mx-auto flex items-center justify-center group-hover:border-white/60 transition">
-                            <span class="text-xs font-light">+</span>
-                        </div>
-                        <p class="text-xs font-mono text-neutral-500 uppercase tracking-widest">Curated Experience</p>
-                    </div>
-                </div>
-                <div class="space-y-4">
-                    <span class="text-xs text-neutral-500 font-mono">02 // OBJECTIVE</span>
-                    <h2 class="text-3xl font-semibold tracking-tight">The Aesthetic Community</h2>
-                    <p class="text-neutral-400 font-light leading-relaxed">
-                        Join a curated network of creators and developers syncing aesthetics with high-performance workflows. Customize this interface to match your exact identity.
-                    </p>
+            <!-- Contenedor dinámico donde aparecerán las tarjetas de los pacientes -->
+            <div id="grid-pacientes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="col-span-full border border-white/10 bg-neutral-900/50 rounded-lg p-12 flex items-center justify-center min-h-[200px]">
+                    <p class="text-neutral-400 text-sm font-light animate-pulse">Conectando con Supabase...</p>
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- Pie de página (Footer) -->
     <footer class="border-t border-white/10 bg-[#070707]">
         <div class="max-w-7xl mx-auto px-6 py-12 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0 text-sm text-neutral-500">
             <p>&copy; 2026 SYMMETRY CLUB. Open Source Canvas.</p>
@@ -108,5 +93,65 @@
         </div>
     </footer>
 
+    <!-- Lógica de Conexión a Supabase -->
+    <script>
+        // Credenciales de tu proyecto Supabase
+        const SUPABASE_URL = "https://gknzhlntsvsbrzlfujxi.supabase.co"; 
+        const SUPABASE_KEY = "sb_publishable_T6-zu4St4MgdJ1OWdELMNQ_1SgdRnQv";
+
+        // Inicializar el cliente
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function cargarPacientes() {
+            const grid = document.getElementById('grid-pacientes');
+
+            // Consultamos la tabla de pacientes
+            const { data: pacientes, error } = await supabaseClient
+                .from('pacientes')
+                .select('id, nombre_completo, rut, sexo');
+
+            if (error) {
+                console.error("Error al obtener pacientes:", error);
+                grid.innerHTML = `
+                    <div class="col-span-full border border-red-500/20 bg-red-500/5 rounded-lg p-12 text-center">
+                        <p class="text-red-400 text-sm">Error de conexión con la base de datos de Supabase.</p>
+                    </div>`;
+                return;
+            }
+
+            if (!pacientes || pacientes.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full border border-white/10 bg-neutral-900/50 rounded-lg p-12 text-center">
+                        <p class="text-neutral-400 text-sm font-light">No hay pacientes registrados en el sistema.</p>
+                    </div>`;
+                return;
+            }
+
+            // Limpiamos el contenedor del mensaje de carga
+            grid.innerHTML = "";
+
+            // Generamos las tarjetas adaptadas al diseño premium del sitio
+            pacientes.forEach(paciente => {
+                const card = document.createElement('div');
+                card.className = "border border-white/10 bg-neutral-900/30 hover:border-white/20 transition duration-300 rounded-lg p-6 flex flex-col justify-between min-h-[180px]";
+                
+                card.innerHTML = `
+                    <div>
+                        <span class="text-xs text-neutral-500 font-mono tracking-widest uppercase">${paciente.sexo || 'No especificado'}</span>
+                        <h3 class="text-xl font-medium text-white mt-1">${paciente.nombre_completo}</h3>
+                        <p class="text-sm text-neutral-400 mt-2 font-light">RUT: ${paciente.rut}</p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-white/5 flex justify-between items-center text-xs text-neutral-500 font-mono">
+                        <span>ID: ${paciente.id.substring(0, 8)}...</span>
+                        <span class="text-white hover:underline cursor-pointer">Ver Ficha →</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Ejecutar la carga de datos inmediatamente al abrir la web
+        cargarPacientes();
+    </script>
 </body>
 </html>
