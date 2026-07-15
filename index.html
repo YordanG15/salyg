@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700&display=swap');
         body {
             font-family: 'Inter', sans-serif;
             background-color: #0a0a0a;
@@ -131,6 +131,7 @@
 
                 <!-- Ficha en pantalla ya creada -->
                 <div id="ficha-perfil-container" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Identidad -->
                     <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
                         <div>
                             <span id="f-sexo" class="text-xs text-neutral-500 font-mono tracking-widest uppercase">MASCULINO</span>
@@ -140,6 +141,7 @@
                         </div>
                     </div>
 
+                    <!-- Biometría -->
                     <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
                         <div>
                             <span class="text-xs text-neutral-500 font-mono">BIOMETRÍA E HISTORIAL</span>
@@ -159,10 +161,21 @@
                         </button>
                     </div>
 
-                    <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px]">
+                    <!-- Enfermedades y Recetas -->
+                    <div class="border border-white/10 bg-neutral-950 rounded-lg p-6 flex flex-col justify-between min-h-[220px] space-y-4">
                         <div>
                             <span class="text-xs text-neutral-500 font-mono">ENFERMEDADES CRÓNICAS</span>
-                            <p id="f-cronicas" class="text-sm text-neutral-400 font-light mt-4 leading-relaxed">Ninguna registrada.</p>
+                            <p id="f-cronicas" class="text-sm text-neutral-400 font-light mt-2 leading-relaxed">Ninguna registrada.</p>
+                        </div>
+                        <div class="border-t border-white/5 pt-3">
+                            <span class="text-xs text-neutral-500 font-mono block mb-2">MIS DOCUMENTOS Y RECETAS</span>
+                            <div id="f-recetas" class="space-y-1.5 max-h-[80px] overflow-y-auto mb-3">
+                                <p class="text-[10px] text-neutral-500 italic">No hay recetas subidas.</p>
+                            </div>
+                            <input type="file" id="input-receta" class="hidden" onchange="subirDocumentoMedico(event)">
+                            <button onclick="document.getElementById('input-receta').click()" class="w-full bg-white text-black text-[10px] font-semibold py-1.5 hover:bg-neutral-200 transition uppercase tracking-wider">
+                                Subir Nueva Receta
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -182,7 +195,7 @@
                     </div>
                     <div class="space-y-2">
                         <h3 class="text-2xl font-light text-white">Función de Inteligencia Artificial Premium</h3>
-                        <p class="text-sm text-neutral-400 max-w-md mx-auto">Compara precios de consultas, cotiza medicamentos en farmacias cercanas y localiza centros médicos de forma inteligente.</p>
+                        <p class="text-sm text-neutral-400 max-w-md mx-auto">Compara precios de consultas, cotiza medicamentos en farmacias cercanas y localiza centros de urgencia en base a tu situación.</p>
                     </div>
                     <div class="bg-neutral-900/50 p-6 rounded border border-white/5 max-w-sm mx-auto">
                         <span class="text-xs font-mono text-neutral-500 block">MEMBRESÍA ACTIVA</span>
@@ -197,27 +210,33 @@
                 <!-- Caso B2: Usuario SÍ Suscrito -->
                 <div id="ia-activa-container" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Caja 1: Localizador -->
-                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
-                        <span class="text-xs text-neutral-500 font-mono">📍 LOCALIZADOR DE CENTROS</span>
-                        <h4 class="text-xl font-light">¿Dónde atenderse hoy?</h4>
-                        <p class="text-xs text-neutral-400">La IA analiza centros de atención pública, SAPU o clínicas privadas más cercanas a ti en Concepción o Los Ángeles.</p>
-                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Consultar Ubicaciones</button>
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-neutral-500 font-mono">📍 LOCALIZADOR DE CENTROS</span>
+                            <h4 class="text-xl font-light mt-1">¿Dónde atenderse hoy?</h4>
+                            <p class="text-xs text-neutral-400 mt-2">La IA analiza centros de atención pública, SAPU o clínicas privadas más cercanas a ti en Concepción o Los Ángeles.</p>
+                        </div>
+                        <button onclick="solicitarIA('localizador')" class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Consultar Ubicaciones</button>
                     </div>
 
                     <!-- Caja 2: Comparador -->
-                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
-                        <span class="text-xs text-neutral-500 font-mono">💸 COMPARADOR DE CONSULTAS</span>
-                        <h4 class="text-xl font-light">Compara Aranceles</h4>
-                        <p class="text-xs text-neutral-400">Introduce la especialidad médica que necesitas y evalúa qué clínicas o médicos independientes te convienen más.</p>
-                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Evaluar Precios</button>
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-neutral-500 font-mono">💸 COMPARADOR DE CONSULTAS</span>
+                            <h4 class="text-xl font-light mt-1">Compara Aranceles</h4>
+                            <p class="text-xs text-neutral-400 mt-2">Introduce la especialidad médica que necesitas y evalúa qué clínicas o médicos independientes te convienen más.</p>
+                        </div>
+                        <button onclick="solicitarIA('comparador')" class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Evaluar Precios</button>
                     </div>
 
                     <!-- Caja 3: Cotizador Fármacos -->
-                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4">
-                        <span class="text-xs text-neutral-500 font-mono">💊 COTIZADOR DE FÁRMACOS & CUPONES</span>
-                        <h4 class="text-xl font-light">Cotiza tus Recetas</h4>
-                        <p class="text-xs text-neutral-400">Sube el nombre de tu medicamento crónico. La IA cotizará en Cruz Verde, Salcobrand y Ahumada, aplicando descuentos Fonasa, Isapre o convenios de tu comuna.</p>
-                        <button class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Cotizar Medicamento</button>
+                    <div class="bg-neutral-950 border border-white/10 rounded-lg p-6 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs text-neutral-500 font-mono">💊 COTIZADOR DE FÁRMACOS & CUPONES</span>
+                            <h4 class="text-xl font-light mt-1">Cotiza tus Recetas</h4>
+                            <p class="text-xs text-neutral-400 mt-2">Introduce el medicamento crónico. La IA cotizará en farmacias locales, aplicando descuentos por convenios de tu comuna.</p>
+                        </div>
+                        <button onclick="solicitarIA('cotizador')" class="w-full bg-white text-black py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-neutral-200 transition">Cotizar Medicamento</button>
                     </div>
                 </div>
             </section>
@@ -256,6 +275,24 @@
         </div>
     </div>
 
+    <!-- MODAL CONSOLA RESULTADOS IA -->
+    <div id="modal-ia-resultado" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md items-center justify-center p-4">
+        <div class="bg-neutral-950 border border-white/15 w-full max-w-2xl rounded-lg p-8 relative flex flex-col space-y-6">
+            <button onclick="cerrarModalIA()" class="absolute top-4 right-4 text-neutral-400 hover:text-white font-mono text-lg">×</button>
+            <div>
+                <span id="ia-categoria" class="text-xs text-neutral-500 font-mono uppercase">Symmetry IA</span>
+                <h3 id="ia-consulta-titulo" class="text-2xl font-light text-white mt-1">Procesando consulta...</h3>
+            </div>
+            <div id="ia-pantalla-salida" class="bg-neutral-900/40 border border-white/5 rounded p-6 text-sm text-neutral-300 font-mono leading-relaxed max-h-[350px] overflow-y-auto whitespace-pre-wrap">
+                Inicializando motor cognitivo...
+            </div>
+            <button onclick="cerrarModalIA()" class="border border-white/20 text-white py-2 text-xs uppercase tracking-widest font-semibold hover:bg-white hover:text-black hover:border-white transition duration-300">
+                Cerrar Panel IA
+            </button>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE COMPORTAMIENTO PRINCIPAL -->
     <script>
         const SUPABASE_URL = "https://gknzhlntsvsbrzlfujxi.supabase.co"; 
         const SUPABASE_KEY = "sb_publishable_T6-zu4St4MgdJ1OWdELMNQ_1SgdRnQv";
@@ -426,6 +463,28 @@
                 document.getElementById('f-estatura').innerText = `${historial[0].estatura_cm} cm`;
                 document.getElementById('f-peso').innerText = `${historial[0].peso_kg} kg`;
             }
+
+            // Renderizar documentos (recetas)
+            const { data: recetas } = await supabaseClient
+                .from('recetas_medicas')
+                .select('url_imagen, descripcion')
+                .eq('usuario_id', usuarioSesion.id);
+
+            const recetasCont = document.getElementById('f-recetas');
+            recetasCont.innerHTML = "";
+
+            if (recetas && recetas.length > 0) {
+                recetas.forEach(receta => {
+                    const item = document.createElement('a');
+                    item.href = receta.url_imagen;
+                    item.target = "_blank";
+                    item.className = "block bg-neutral-900 border border-white/5 hover:border-white/20 p-2 text-[10px] text-neutral-400 hover:text-white rounded transition truncate";
+                    item.innerText = receta.descripcion || "Ver receta";
+                    recetasCont.appendChild(item);
+                });
+            } else {
+                recetasCont.innerHTML = `<p class="text-[10px] text-neutral-500 italic">No tienes documentos registrados.</p>`;
+            }
         }
 
         async function evaluarSuscripcionIA() {
@@ -445,17 +504,16 @@
         }
 
         async function simularSuscripcion() {
-            // Inserta una suscripción activa para el usuario de prueba
             const { error } = await supabaseClient
                 .from('suscripciones')
                 .insert([{
                     usuario_id: usuarioSesion.id,
                     estado: 'active',
-                    fecha_vencimiento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 días más
+                    fecha_vencimiento: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
                 }]);
 
             if (error) {
-                alert("Error al procesar la suscripción de prueba.");
+                alert("Error al simular la suscripción.");
                 return;
             }
 
@@ -485,54 +543,144 @@
 
             cerrarModalActualizarFisico();
             comprobarYFicha();
-            // Función para subir una receta al Storage de Supabase
-async function subirDocumentoMedico(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const descripcion = prompt("Ingresa una breve descripción para este documento (ej: Receta Kinesiólogo, Examen de Sangre):");
-    if (!descripcion) return;
-
-    // 1. Generar un nombre único para el archivo en el storage
-    const extension = file.name.split('.').pop();
-    const nombreArchivo = `${usuarioSesion.id}/${Date.now()}.${extension}`;
-
-    // 2. Subir el archivo al Bucket 'recetas'
-    const { data: uploadData, error: uploadError } = await supabaseClient
-        .storage
-        .from('recetas')
-        .upload(nombreArchivo, file);
-
-    if (uploadError) {
-        alert("Error al subir el archivo: " + uploadError.message);
-        return;
-    }
-
-    // 3. Obtener la URL pública del archivo subido
-    const { data: urlData } = supabaseClient
-        .storage
-        .from('recetas')
-        .getPublicUrl(nombreArchivo);
-
-    const urlPublica = urlData.publicUrl;
-
-    // 4. Registrar la URL en la tabla 'recetas_medicas' vinculada a tu cuenta
-    const { error: dbError } = await supabaseClient
-        .from('recetas_medicas')
-        .insert([{
-            usuario_id: usuarioSesion.id,
-            url_imagen: urlPublica,
-            descripcion: descripcion
-        }]);
-
-    if (dbError) {
-        alert("Archivo subido, pero no se pudo registrar en la base de datos: " + dbError.message);
-    } else {
-        alert("¡Documento médico subido y guardado con éxito!");
-        comprobarYFicha(); // Recarga la ficha para mostrar la nueva receta
-    }
-}
         });
+
+        // SUBIDA DE DOCUMENTOS (RECETAS) A STORAGE Y BASE DE DATOS
+        async function subirDocumentoMedico(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const descripcion = prompt("Ingresa una descripción para este documento (ej: Receta de Prueba, Kinesiólogo Los Ángeles, Certificado Médico):");
+            if (!descripcion) return;
+
+            const extension = file.name.split('.').pop();
+            const nombreArchivo = `${usuarioSesion.id}/${Date.now()}.${extension}`;
+
+            const { data: uploadData, error: uploadError } = await supabaseClient
+                .storage
+                .from('recetas')
+                .upload(nombreArchivo, file);
+
+            if (uploadError) {
+                alert("Error al subir el archivo al storage: " + uploadError.message);
+                return;
+            }
+
+            const { data: urlData } = supabaseClient
+                .storage
+                .from('recetas')
+                .getPublicUrl(nombreArchivo);
+
+            const urlPublica = urlData.publicUrl;
+
+            const { error: dbError } = await supabaseClient
+                .from('recetas_medicas')
+                .insert([{
+                    usuario_id: usuarioSesion.id,
+                    url_imagen: urlPublica,
+                    descripcion: descripcion
+                }]);
+
+            if (dbError) {
+                alert("Error registrando archivo en base de datos: " + dbError.message);
+            } else {
+                alert("¡Documento médico subido y guardado exitosamente!");
+                comprobarYFicha();
+            }
+        }
+
+        // CONTROL DE CONSOLA / MOTOR DE IA SIMULADO
+        function abrirModalIA(categoria, titulo) {
+            document.getElementById('ia-categoria').innerText = "Symmetry IA // " + categoria.toUpperCase();
+            document.getElementById('ia-consulta-titulo').innerText = titulo;
+            document.getElementById('ia-pantalla-salida').innerText = "Inicializando motor cognitivo...\nConectando con bases de datos locales en Biobío...\nEjecutando algoritmos heurísticos...";
+            document.getElementById('modal-ia-resultado').classList.remove('hidden');
+            document.getElementById('modal-ia-resultado').classList.add('flex');
+        }
+
+        function cerrarModalIA() {
+            document.getElementById('modal-ia-resultado').classList.add('hidden');
+            document.getElementById('modal-ia-resultado').classList.remove('flex');
+        }
+
+        function solicitarIA(tipo) {
+            if (tipo === 'localizador') {
+                const sintomas = prompt("📍 IA LOCALIZADOR:\n¿Qué síntomas o especialidad necesitas buscar y en qué comuna (Los Ángeles / Concepción) te encuentras?");
+                if (!sintomas) return;
+                abrirModalIA("localizador", `Búsqueda: ${sintomas}`);
+                setTimeout(() => {
+                    document.getElementById('ia-pantalla-salida').innerText = `[ANALIZANDO RED DE SALUD EN CHILE - ENTORNO LOCAL CHILE-BIOBÍO]
+
+Resultados de búsqueda IA para: "${sintomas}"
+
+1. Centro de Salud Familiar (CESFAM) Central
+   - Tipo: Público (Atención Primaria / SAPU)
+   - Ubicación: Los Ángeles, Región del Biobío.
+   - Costo: Gratuito (Fonasa A, B, C, D)
+   - Estado IA: Abierto 24 horas para urgencias.
+
+2. Clínica Los Andes
+   - Tipo: Privado (Convenios Isapre/Fonasa)
+   - Ubicación: Los Ángeles, Biobío.
+   - Especialidad detectada: Urgencias y traumatología general.
+
+3. Hospital Clínico Regional Dr. Guillermo Grant Benavente
+   - Tipo: Público (Atención Secundaria/Terciaria)
+   - Ubicación: Concepción, Biobío.
+   - Observación IA: Mayor complejidad, recomendado para derivaciones de urgencia severa.`;
+                }, 1500);
+
+            } else if (tipo === 'comparador') {
+                const especialidad = prompt("💸 IA COMPARADOR DE ARANCELES:\n¿Qué consulta o examen médico deseas comparar? (ej: Traumatólogo, Kinesiólogo, Resonancia Lumbar)");
+                if (!especialidad) return;
+                abrirModalIA("comparador", `Comparativa: ${especialidad}`);
+                setTimeout(() => {
+                    document.getElementById('ia-pantalla-salida').innerText = `[CONSULTANDO ARANCELES MÉDICOS ESTIMADOS]
+
+Resultados comparativos de Inteligencia Artificial para: "${especialidad}"
+
+* Opción Particular (Sin convenio):
+  - Consulta promedio: $45.000 - $60.000 (Clínicas privadas en Concepción)
+  - Consulta promedio: $35.000 - $45.000 (Centros médicos Los Ángeles)
+
+* Opción Fonasa (Modalidad Libre Elección - MLE):
+  - Nivel 1: $6.450
+  - Nivel 2: $8.390
+  - Nivel 3: $12.330 (Clínicas asociadas)
+
+* Opción Isapre (Estimado según plan estándar 70%):
+  - Copago final estimado: $14.000 - $18.500
+
+Recomendación de la IA: Los Ángeles cuenta con valores particulares de menor costo que el promedio regional en Concepción para esta consulta médica.`;
+                }, 1500);
+
+            } else if (tipo === 'cotizador') {
+                const medicamento = prompt("💊 IA COTIZADOR DE FÁRMACOS:\nIngresa el nombre del medicamento crónico que deseas cotizar (ej: Losartán 50mg, Atorvastatina, Creatina):");
+                if (!medicamento) return;
+                abrirModalIA("cotizador", `Cotizando: ${medicamento}`);
+                setTimeout(() => {
+                    document.getElementById('ia-pantalla-salida').innerText = `[ESCANEANDO CATÁLOGO DE FARMACIAS REGIONALES]
+
+Resultados de la IA para: "${medicamento}"
+
+* Farmacia Ahumada:
+  - Precio Base: $8.990
+  - Con Convenio Fonasa (Descuento automático): $3.150 ¡Ahorro del 65%!
+
+* Farmacia Cruz Verde:
+  - Precio Base: $9.290
+  - Convenio Municipal / Tarjeta Vecino (L.A / Concepción): $6.500
+
+* Farmacia Popular (Comunitaria):
+  - Precio Estimado (Stock según importación directa): $1.200
+
+* Farmacias Similares (Genérico):
+  - Dr. Simi (Lunes 25% descuento): $2.250
+
+Análisis de Cupones Activos por la IA: Si posees Fonasa, el convenio de medicamentos en Farmacia Ahumada reduce sustancialmente el copago final.`;
+                }, 1500);
+            }
+        }
     </script>
 </body>
 </html>
