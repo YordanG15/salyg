@@ -485,6 +485,53 @@
 
             cerrarModalActualizarFisico();
             comprobarYFicha();
+            // Función para subir una receta al Storage de Supabase
+async function subirDocumentoMedico(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const descripcion = prompt("Ingresa una breve descripción para este documento (ej: Receta Kinesiólogo, Examen de Sangre):");
+    if (!descripcion) return;
+
+    // 1. Generar un nombre único para el archivo en el storage
+    const extension = file.name.split('.').pop();
+    const nombreArchivo = `${usuarioSesion.id}/${Date.now()}.${extension}`;
+
+    // 2. Subir el archivo al Bucket 'recetas'
+    const { data: uploadData, error: uploadError } = await supabaseClient
+        .storage
+        .from('recetas')
+        .upload(nombreArchivo, file);
+
+    if (uploadError) {
+        alert("Error al subir el archivo: " + uploadError.message);
+        return;
+    }
+
+    // 3. Obtener la URL pública del archivo subido
+    const { data: urlData } = supabaseClient
+        .storage
+        .from('recetas')
+        .getPublicUrl(nombreArchivo);
+
+    const urlPublica = urlData.publicUrl;
+
+    // 4. Registrar la URL en la tabla 'recetas_medicas' vinculada a tu cuenta
+    const { error: dbError } = await supabaseClient
+        .from('recetas_medicas')
+        .insert([{
+            usuario_id: usuarioSesion.id,
+            url_imagen: urlPublica,
+            descripcion: descripcion
+        }]);
+
+    if (dbError) {
+        alert("Archivo subido, pero no se pudo registrar en la base de datos: " + dbError.message);
+    } else {
+        alert("¡Documento médico subido y guardado con éxito!");
+        comprobarYFicha(); // Recarga la ficha para mostrar la nueva receta
+    }
+}
         });
     </script>
 </body>
